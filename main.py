@@ -19,6 +19,7 @@ CLIENT_ID = os.environ.get("CLIENT_ID")
 REDIRECT_URL = os.environ.get("REDIRECT_URL")
 SCOPE = os.environ.get("SCOPE")
 TOKEN_URL = os.environ.get("TOKEN_URL")
+LIST_URL = os.environ.get("LIST_URL")
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -89,7 +90,6 @@ def get_access_token():
 
  
 if path.exists(cache_file):
-    print("Exists")
     #Reading cache
     with open(cache_file, "r") as infile:
         access_token = json.load(infile)
@@ -101,5 +101,5 @@ else:
     #No cached value, get and cache
     access_token = get_access_token()
 
-r = requests.get("https://graph.microsoft.com/v1.0/sites/fc750661-1d01-4881-8d31-2fc88ef07d90/lists" + "/1aef1485-f4be-4d05-8ca8-e4f7c26266fa/items?expand=fields", headers={'Authorization': "Bearer " + access_token["access_token"]})
+r = requests.get(LIST_URL, headers={'Authorization': "Bearer " + access_token["access_token"]})
 
