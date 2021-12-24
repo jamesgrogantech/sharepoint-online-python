@@ -1,6 +1,7 @@
 import requests
 from .auth import Auth
 
+
 class Sharepoint:
     def __init__(
         self,
@@ -22,16 +23,18 @@ class Sharepoint:
         if query_params is not None:
             params = "?"
             for key, value in query_params.items():
-                params += (key + "=" + value + "&")
-                
+                params += key + "=" + value + "&"
 
-        r = requests.get((
-            "https://graph.microsoft.com/v1.0/sites/" 
-            + self.site_id 
-            + "/lists/"
-            + list_id
-            + "/items"
-            + params), headers={"Authorization": "Bearer " + access_token["access_token"]}
+        r = requests.get(
+            (
+                "https://graph.microsoft.com/v1.0/sites/"
+                + self.site_id
+                + "/lists/"
+                + list_id
+                + "/items"
+                + params
+            ),
+            headers={"Authorization": "Bearer " + access_token["access_token"]},
         )
-        
+
         return r.json()

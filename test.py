@@ -1,6 +1,8 @@
 from dotenv import load_dotenv
 import os
 from sharepoint_online import sharepoint
+import pandas as pd
+
 
 load_dotenv()
 
@@ -15,4 +17,13 @@ LIST_ID = os.environ.get("LIST_ID")
 
 sp = sharepoint.Sharepoint(CLIENT_ID, AUTH_URL, TOKEN_URL, SITE_ID)
 
-print(sp.get_list_items(LIST_ID, expand="fields"))
+items = sp.get_list_items(LIST_ID, expand="fields")["value"]
+
+new_list = []
+
+for item in items:
+    new_list.append(item["fields"])
+
+df = pd.DataFrame(new_list)
+
+df

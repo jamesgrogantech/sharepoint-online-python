@@ -6,6 +6,7 @@ Allows users to access Sharepoint data within a locally running Python script. S
 
 Will open a new browser window -> allow the user to login -> then produce an access token for the local Python script to authenticate for SharePoint. 
 
+This is only suitable for python scripts running on a local machine as it requires user input to authenticate. Ideal for running in a Jupyter Notebook environment and integrating with Pandas.
 
 ## Setup
 
@@ -24,16 +25,6 @@ Will open a new browser window -> allow the user to login -> then produce an acc
 
 ```python
 from sharepoint_online import sharepoint
-from dotenv import load_dotenv
-import os
-
-# These details are probably best stored in environment variables
-load_dotenv()
-CLIENT_ID = os.environ.get("CLIENT_ID")
-AUTH_URL = os.environ.get("AUTH_URL")
-TOKEN_URL = os.environ.get("TOKEN_URL")
-SITE_ID = os.environ.get("SITE_ID")
-LIST_ID = os.environ.get("LIST_ID")
 
 # Create an instance of 'Sharepoint'
 sp = sharepoint.Sharepoint(CLIENT_ID, AUTH_URL, TOKEN_URL, SITE_ID)
@@ -42,6 +33,25 @@ sp = sharepoint.Sharepoint(CLIENT_ID, AUTH_URL, TOKEN_URL, SITE_ID)
 # You can also add query parameters as kwargs as shown with 'expand="fields" to get the field data' 
 print(sp.get_list_items(LIST_ID, expand="fields"))
 ```
+
+### With Pandas 
+
+```python
+items = sp.get_list_items(LIST_ID, expand="fields")["value"]
+
+simple_list = []
+
+for item in items:
+    simple_list.append(item["fields"])
+
+df = pd.DataFrame(simple_list)
+
+## Removes the unique id provided by Sharepoint as this is often unwanted.
+df.drop('@odata.etag', axis=1, inplace=True)
+
+print(df) ## or simply df to produce a formatted table if used in Jupyter Notebooks
+```
+
 This is based on the Microsoft Graph API and the docs for the currently supported request is here:
 https://docs.microsoft.com/en-us/graph/api/list-get?view=graph-rest-1.0&tabs=http
 
