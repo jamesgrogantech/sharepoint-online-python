@@ -68,3 +68,9 @@ Follow the steps below to gain access to setup the app registration and find the
 4. Click Authentication -> add a platform -> Mobile and desktop applications -> and enter: http://localhost:3000
 5. Find the site ID from this tutorial: https://www.sharepointdiary.com/2018/04/sharepoint-online-powershell-to-get-site-collection-web-id.html
 6. Find the list ID by going to the list sharepoint page, click the cog on the top right, then click "List Settings". In the URL should be a parameter List=%7B..................%7D. Copy everything between the %7B and %7D but not including.
+
+## To-do List
+
+- Add new rows to list
+- Add new columns
+- Testing
