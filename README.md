@@ -1,60 +1,62 @@
 # SharePoint Online Python
 
-Currently Under Development 
+Currently Under Development, PRs are welcome.
 
-Allows users to access Sharepoint data within a locally running Python script. Supports Microsoft Active Directory SSO for SharePoint Online.
+Allows users to access SharePoint List data within a locally running Python script. Supports Microsoft Active Directory SSO for SharePoint Online.
 
-Will open a new browser window -> allow the user to login -> then produce an access token for the local Python script to authenticate for SharePoint. 
+Will open a new browser window -> allow the user to login -> then produce an access token for the local Python script to authenticate for SharePoint.
 
-This is only suitable for python scripts running on a local machine as it requires user input to authenticate. Ideal for running in a Jupyter Notebook environment and integrating with Pandas.
+This is only suitable for python scripts running on a local machine as it requires user input to authenticate. This library is tightly integrated with Pandas to allow simple read write between a SharePoint List and a Pandas dataframe.
 
 ## Setup
 
 1. Install package:
 
-    ```shell
-    pip install sharepoint-online-python
-    ```
+   ```shell
+   pip install sharepoint-online-python
+   ```
+
 2. Import:
 
-    ```python
-    from sharepoint-online-python import sharepoint
-    ```
+   ```python
+   from sharepoint_online import SharePoint
+   ```
 
 ## Example
 
 ```python
-from sharepoint_online import sharepoint
+from dotenv import load_dotenv
+import os
+from sharepoint_online import SharePoint
 
-# Create an instance of 'Sharepoint'
-sp = sharepoint.Sharepoint(CLIENT_ID, AUTH_URL, TOKEN_URL, SITE_ID)
+load_dotenv()
 
-# Use 'get_list_items' to make a get request to the list and retrieve the items in JSON format.
-# You can also add query parameters as kwargs as shown with 'expand="fields" to get the field data' 
-print(sp.get_list_items(LIST_ID, expand="fields"))
-```
+# it is advisable to load these details in from an .env file
+AUTH_URL = os.environ.get("AUTH_URL")
+CLIENT_ID = os.environ.get("CLIENT_ID")
+TOKEN_URL = os.environ.get("TOKEN_URL")
+SITE_ID = os.environ.get("SITE_ID")
+LIST_ID = os.environ.get("LIST_ID")
 
-### With Pandas 
+# initialize the SharePoint object
+sp = SharePoint(CLIENT_ID, AUTH_URL, TOKEN_URL, SITE_ID)
 
-```python
-items = sp.get_list_items(LIST_ID, expand="fields")["value"]
+# get the list as a pandas dataframe
+working_df = sp.get_list_df(LIST_ID, expand="fields")
 
-simple_list = []
+# reassign the title column as "New Title"
+working_df["Title"] = "New Title"
 
-for item in items:
-    simple_list.append(item["fields"])
+# update the list based on the modified dataframe
+sp.update_rows(LIST_ID, working_df)
 
-df = pd.DataFrame(simple_list)
+# get the updated list as a dataframe
+print(sp.get_list_df(LIST_ID, expand="fields"))
 
-## Removes the unique id provided by Sharepoint as this is often unwanted.
-df.drop('@odata.etag', axis=1, inplace=True)
-
-print(df) ## or simply df to produce a formatted table if used in Jupyter Notebooks
 ```
 
 This is based on the Microsoft Graph API and the docs for the currently supported request is here:
 https://docs.microsoft.com/en-us/graph/api/list-get?view=graph-rest-1.0&tabs=http
-
 
 In order to use this, you must first have access to the Azure Active Directory in your tenant and have permission to create App Registrations.
 
@@ -65,4 +67,4 @@ Follow the steps below to gain access to setup the app registration and find the
 3. Click API Permissions -> add a permission -> Microsoft Graph -> Delegated Permissions -> Sites and select Sites.Read.All then click Add Permissions. You may need to get these permissions approved by the tenant administrator.
 4. Click Authentication -> add a platform -> Mobile and desktop applications -> and enter: http://localhost:3000
 5. Find the site ID from this tutorial: https://www.sharepointdiary.com/2018/04/sharepoint-online-powershell-to-get-site-collection-web-id.html
-6. Find the list ID by going to the list sharepoint page, click the cog on the top right, then click "List Settings". In the URL should be a parameter List=%7B..................%7D. Copy everything between the %7B and %7D but not including. 
+6. Find the list ID by going to the list sharepoint page, click the cog on the top right, then click "List Settings". In the URL should be a parameter List=%7B..................%7D. Copy everything between the %7B and %7D but not including.

@@ -37,12 +37,12 @@ class HTTPServerHandler(BaseHTTPRequestHandler):
 class Auth:
     def __init__(
         self,
-        client_id,
-        auth_url,
-        token_url,
-        redirect_uri="http://localhost:3000",
-        scope="Sites.Read.All",
-        port="3000",
+        client_id: str,
+        auth_url: str,
+        token_url: str,
+        redirect_uri: str="http://localhost:3000",
+        scope: str="Sites.Read.All",
+        port: str="3000",
     ):
         self.client_id = client_id
         self.auth_url = auth_url
