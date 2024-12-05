@@ -10,6 +10,10 @@ TOKEN_URL = os.environ.get("TOKEN_URL")
 SITE_ID = os.environ.get("SITE_ID")
 LIST_ID = os.environ.get("LIST_ID")
 
+# Check the environment variables exist
+if not AUTH_URL or not CLIENT_ID or not TOKEN_URL or not SITE_ID or not LIST_ID:
+    raise ValueError("Please set the environment variables")
+
 # initialise the SharePoint object
 sp = SharePoint(CLIENT_ID, AUTH_URL, TOKEN_URL, SITE_ID)
 

@@ -103,6 +103,7 @@ class Auth:
                 "client_id": self.client_id,
                 "code_verifier": code_verifier,
             },
+            headers={"Origin": "https://localhost"},
         )
         data = r.json()
         expiration_time = datetime.datetime.now() + datetime.timedelta(

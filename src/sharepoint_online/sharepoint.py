@@ -58,19 +58,27 @@ class SharePoint:
             for key, value in query_params.items():
                 params += key + "=" + value + "&"
 
-        r = requests.get(
-            (
-                "https://graph.microsoft.com/v1.0/sites/"
-                + self.site_id
-                + "/lists/"
-                + list_id
-                + "/items"
-                + params
-            ),
-            headers={"Authorization": "Bearer " +
-                     access_token["access_token"]},
+        all_data = []
+        url = (
+            "https://graph.microsoft.com/v1.0/sites/"
+            + self.site_id
+            + "/lists/"
+            + list_id
+            + "/items"
+            + params
         )
-        raw = r.json()
+        
+        while url:
+            r = requests.get(
+            url,
+            headers={"Authorization": "Bearer " +
+                 access_token["access_token"]},
+            )
+            raw = r.json()
+            all_data.extend(raw["value"])
+            url = raw.get('@odata.nextLink')
+
+        raw["value"] = all_data
 
         if returnRaw:
             return raw
